@@ -1,3 +1,6 @@
+from ..models.attraction import Attraction
+from ..models import Maneger
+
 def admin_menu():
     while True:
         print("\n" + "=" * 45)
@@ -39,7 +42,13 @@ def view_attractions():
     print("             ALL ATTRACTIONS")
     print("=" * 45)
 
-    print("\nAttractions will be loaded from attractions.json.")
+    attractions = Maneger.load_attractions()
+    if not attractions:
+        print("\nNo attractions found.")
+    else:
+        for a in attractions:
+            print(f"{a.id} {a}")   
+
     input("\nPress Enter to continue...")
 
 def add_attraction():
@@ -49,13 +58,26 @@ def add_attraction():
 
     name = input("Name: ").strip()
     governorate = input("Governorate: ").strip()
-    ticket_price = input("Ticket Price: ").strip()
-    rating = input("Rating: ").strip()
-    visit_time = input("Estimated Visit Time: ").strip()
     category = input("Category: ").strip()
+    visit_time = input("Estimated Visit Time: ").strip()
 
-    print(f"\nAttraction '{name}' will be added.")
-    input("Press Enter to continue...")
+    ticket_price = float(input("Ticket Price: ").strip())
+    rating = float(input("Rating: ").strip())
+
+# need validation
+    attractions = Maneger.load_attractions()
+    new_id = max((a.id for a in attractions), default=0) + 1
+
+    new_attraction = Attraction(
+        id=new_id, name=name, governorate=governorate,
+        ticket_price=ticket_price, rating=rating,
+        estimated_visit_time=visit_time, category=category,
+    )
+    attractions.append(new_attraction)
+    Maneger.save_attractions(attractions)
+
+    print(f"\nAttraction {name} added successfully.")
+    input("Enter to continue")
 
 def update_attraction():
     print("\n" + "=" * 45)
@@ -63,20 +85,54 @@ def update_attraction():
     print("=" * 45)
 
     name = input("Enter attraction name: ").strip()
+    attractions = Maneger.load_attractions()
 
-    print(f"\nUpdating: {name}")
-    print("Update functionality will be connected here.")
-    input("\nPress Enter to continue...")
+    
+    found = None
+    for a in attractions:
+        if a.name.lower() == name.lower():
+            found = a
+            break
 
+    if not found:
+        print(f"\nAttraction '{name}' not found.")
+        input("Press Enter to continue")
+        return
+
+    print(f"\nUpdating: {found.name}")
+
+    new_governorate = input(f"Governorate {found.governorate}: ").strip()
+    new_category = input(f"Category {found.category}: ").strip()
+    new_visit_time = input(f"Estimated Visit Time {found.estimated_visit_time}: ").strip()
+
+    if new_governorate:
+        found.governorate = new_governorate
+    if new_category:
+        found.category = new_category
+    if new_visit_time:
+        found.estimated_visit_time = new_visit_time
+
+    Maneger.save_attractions(attractions)
+    print(f"\n{found.name} updated successfully.")
+    input("Press Enter to continue")
+    
 def remove_attraction():
     print("\n" + "=" * 45)
     print("            REMOVE ATTRACTION")
     print("=" * 45)
 
     name = input("Enter attraction name: ").strip()
+    attractions = Maneger.load_attractions()
 
-    print(f"\nAttraction '{name}' will be removed.")
-    input("\nPress Enter to continue...")
+    remaining = [a for a in attractions if a.name.lower() != name.lower()]
+
+    if len(remaining) == len(attractions):
+        print(f"\nAttraction {name} not found.")
+    else:
+        Maneger.save_attractions(remaining)
+        print(f"\nAttraction {name} removed successfully.")
+
+    input("Press Enter to continue")
 
 def update_ticket_price():
     print("\n" + "=" * 45)
@@ -84,7 +140,25 @@ def update_ticket_price():
     print("=" * 45)
 
     name = input("Enter attraction name: ").strip()
-    new_price = input("Enter new ticket price: ").strip()
+    attractions = Maneger.load_attractions()
 
-    print(f"\nTicket price for '{name}' will be updated to {new_price}.")
-    input("\nPress Enter to continue...")
+    found = None
+    for a in attractions:
+        if a.name.lower() == name.lower():
+            found = a
+            break
+
+    if not found:
+        print(f"\nAttraction '{name} not found.")
+        input("Press Enter to continue")
+        return
+
+    
+    new_price = float(input("Enter new ticket price: ").strip())
+    
+
+    found.ticket_price = new_price
+    Maneger.save_attractions(attractions)
+
+    print(f"\nTicket price for {found.name} updated to {new_price}.")
+    input("Press Enter to continue")

@@ -1,4 +1,6 @@
 from menus.navigation import NavigationStack
+from ..models import Maneger
+from ..models.trip import Trip
 
 CATEGORIES = [
     "Museums",
@@ -7,7 +9,7 @@ CATEGORIES = [
     "Adventure",
     "Cultural Attractions"
 ]
-
+trip = Trip()
 def user_menu():
     navigation = NavigationStack()
 
@@ -30,10 +32,10 @@ def user_menu():
             search_attraction()
 
         elif choice == "3":
-            my_trip()
+            my_trip(navigation)
 
         elif choice == "4":
-            trip_summary()
+            trip_summary(navigation)
 
         elif choice == "5":
             print("\nLogged out successfully.")
@@ -75,7 +77,7 @@ def category_page(category, navigation):
         print(f"              {category.upper()}")
         print("=" * 45)
 
-        # Temporary data
+        
         print("\n1. View Attractions")
         print("2. Search by Name")
         print("3. Sort by Ticket Price")
@@ -102,34 +104,41 @@ def category_page(category, navigation):
 def show_attractions(category, navigation):
     navigation.push("Attractions")
 
-    print("\n" + "=" * 45)
-    print(f"          {category.upper()} ATTRACTIONS")
-    print("=" * 45)
+    attractions = Maneger.load_attractions()
+    filtered = [a for a in attractions if a.category == category]
 
-    print("\nAttractions will be loaded from attractions.json.")
+    while True:
+        print("\n" + "=" * 45)
+        print(f"          {category.upper()} ATTRACTIONS")
+        print("=" * 45)
 
-    print("\n1. Open Attraction Details")
-    print("2. Back")
+        if not filtered:
+            print("\nNo attractions in this category yet.")
+        else:
+            for i, a in enumerate(filtered, start=1):
+                print(f"{i}. {a}")   
 
-    choice = input("\nEnter your choice: ").strip()
+        print("\nEnter attraction number to view details, or 0 to go Back")
+        choice = input("Enter your choice: ").strip()
 
-    if choice == "1":
-        attraction_details(navigation)
-    elif choice == "2":
-        navigation.back()
+        if choice == "0":
+            navigation.back()
+            return
 
-def attraction_details(navigation):
+        if choice.isdigit() and 1 <= int(choice) <= len(filtered):
+            selected = filtered[int(choice) - 1]
+            attraction_details(selected, navigation)
+        else:
+            print("\nInvalid choice. Please try again.")
+
+def attraction_details(attraction, navigation):
     navigation.push("Attraction Details")
 
     print("\n" + "=" * 45)
     print("            ATTRACTION DETAILS")
     print("=" * 45)
 
-    print("\nName: [Attraction Name]")
-    print("Governorate: [Governorate]")
-    print("Ticket Price: [Price]")
-    print("Rating: [Rating]")
-    print("Estimated Visit Time: [Time]")
+    print(f"\n{attraction.full_details()}")   
 
     print("\n1. Add to My Trip")
     print("2. Back")
@@ -137,8 +146,13 @@ def attraction_details(navigation):
     choice = input("\nEnter your choice: ").strip()
 
     if choice == "1":
-        print("\nAttraction added to My Trip!")
+        added = trip.add_attraction(attraction)
+        if added:
+            print(f"\n'{attraction.name}' added to My Trip!")
+        else:
+            print(f"\n'{attraction.name}' is already in your trip.")
         input("Press Enter to continue...")
+        navigation.back()
     elif choice == "2":
         navigation.back()
 
@@ -175,27 +189,59 @@ def sort_category(category):
     elif choice != "3":
         print("\nInvalid choice.")
 
-def my_trip():
-    print("\n" + "=" * 45)
-    print("                   MY TRIP")
-    print("=" * 45)
+def my_trip(navigation):
+    navigation.push("My Trip")
 
-    print("\nNo attractions selected yet.")
-    print("\n1. Remove Attraction")
-    print("2. Back")
+    while True:
+        print("\n" + "=" * 45)
+        print("                   MY TRIP")
+        print("=" * 45)
 
-    choice = input("\nEnter your choice: ").strip()
+        items = trip.view_trip()
+        if not items:
+            print("\nNo attractions selected yet.")
+        else:
+            for i, a in enumerate(items, start=1):
+                print(f"{i}. {a}")
 
-    if choice == "1":
-        print("\nRemove functionality will be connected here.")
+        print("\n1. Remove Attraction")
+        print("2. Back")
 
-def trip_summary():
+        choice = input("\nEnter your choice: ").strip()
+
+        if choice == "1":
+            if not items:
+                print("\nYour trip is empty.")
+                continue
+            idx = input("Enter item number to remove: ").strip()
+            if idx.isdigit() and 1 <= int(idx) <= len(items):
+                trip.remove_attraction(items[int(idx) - 1])
+                print("\nRemoved successfully.")
+            else:
+                print("\nInvalid number.")
+        elif choice == "2":
+            navigation.back()
+            return
+        else:
+            print("\nInvalid choice. Please try again.")
+def trip_summary(navigation):
+    navigation.push("Trip Summary")
+
     print("\n" + "=" * 45)
     print("                TRIP SUMMARY")
     print("=" * 45)
 
-    print("\nSelected Attractions: [Will be loaded]")
-    print("Tickets Cost: [Calculated]")
-    print("Transportation Cost: [Calculated]")
-    print("Total Trip Cost: [Calculated]")
-    input("\nPress Enter to go back...")
+    summary = trip.get_summary()
+
+    if not summary["attractions"]:
+        print("\nYour trip is empty.")
+    else:
+        for a in summary["attractions"]:
+            print(f"- {a.name} ({a.governorate}) — {a.ticket_price} EGP")
+
+        print(f"\nTickets Cost: {summary['attractions_cost']} EGP")
+        print(f"Transportation Cost: {summary['transportation_cost']} EGP")
+        print(f"Total Trip Cost: {summary['total_cost']} EGP")
+
+    input("\nPress Enter to go back")
+    navigation.back()
