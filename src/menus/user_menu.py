@@ -2,8 +2,7 @@ from .navigation import NavigationStack
 from ..models import Maneger
 from ..models.trip import Trip
 from ..algorithms.search import binary_search, search_by_governorate, search_by_min_rating
-from ..algorithms.sort import merge_sort_by_price
-from ..utils.Validators import validate_number
+from ..algorithms.sort import merge_sort
 
 CATEGORIES = [
     "Museums",
@@ -12,10 +11,12 @@ CATEGORIES = [
     "Adventure",
     "Cultural Attractions"
 ]
-trip = Trip()
+
 def user_menu():
     navigation = NavigationStack()
     navigation.push("Home")
+
+    trip = Trip()
 
     while True:
         print("\n" + "=" * 45)
@@ -30,16 +31,16 @@ def user_menu():
         choice = input("\nEnter your choice: ").strip()
 
         if choice == "1":
-            browse_categories(navigation)
+            browse_categories(navigation, trip)
 
         elif choice == "2":
-            search_attraction()
+            search_attraction(trip)
 
         elif choice == "3":
-            my_trip(navigation)
+            my_trip(navigation, trip)
 
         elif choice == "4":
-            trip_summary(navigation)
+            trip_summary(navigation, trip)
 
         elif choice == "5":
             print("\nLogged out successfully.")
@@ -48,7 +49,7 @@ def user_menu():
         else:
             print("\nInvalid choice. Please try again.")
 
-def browse_categories(navigation):
+def browse_categories(navigation, trip):
     navigation.push("Categories")
 
     while True:
@@ -69,11 +70,11 @@ def browse_categories(navigation):
 
         if choice.isdigit() and 1 <= int(choice) <= len(CATEGORIES):
             category = CATEGORIES[int(choice) - 1]
-            category_page(category, navigation)
+            category_page(category, navigation, trip)
         else:
             print("\nInvalid choice. Please try again.")
 
-def category_page(category, navigation):
+def category_page(category, navigation, trip):
     navigation.push(category)
 
     while True:
@@ -83,30 +84,36 @@ def category_page(category, navigation):
 
         print("\n1. View Attractions")
         print("2. Search by Name")
-        print("3. Sort by Ticket Price")
-        print("4. Search by Governorate")
-        print("5. Search by Minimum Rating")
+        print("3. Search by Governorate")
+        print("4. Search by Minimum Rating")
+        print("5. Sort")
         print("6. Back")
 
         choice = input("\nEnter your choice: ").strip()
 
         if choice == "1":
-            show_attractions(category, navigation)
+            show_attractions(category, navigation, trip)
+
         elif choice == "2":
-            search_category(category)
+            search_category(category, trip)
+
         elif choice == "3":
-            sort_category(category)
+            search_category_by_governorate(category, trip)
+
         elif choice == "4":
-            search_category_by_governorate(category)
+            search_category_by_rating(category, trip)
+
         elif choice == "5":
-            search_category_by_rating(category)
+            sort_category(category)
+
         elif choice == "6":
             navigation.back()
             return
+
         else:
             print("\nInvalid choice. Please try again.")
 
-def show_attractions(category, navigation):
+def show_attractions(category, navigation, trip):
     navigation.push("Attractions")
 
     attractions = Maneger.load_attractions()
@@ -121,7 +128,7 @@ def show_attractions(category, navigation):
             print("\nNo attractions in this category yet.")
         else:
             for i, a in enumerate(filtered, start=1):
-                print(f"{i}. {a}")   
+                print(f"{i}. {a}")
 
         print("\nEnter attraction number to view details, or 0 to go Back")
         choice = input("Enter your choice: ").strip()
@@ -132,18 +139,18 @@ def show_attractions(category, navigation):
 
         if choice.isdigit() and 1 <= int(choice) <= len(filtered):
             selected = filtered[int(choice) - 1]
-            attraction_details(selected, navigation)
+            attraction_details(selected, navigation, trip)
         else:
             print("\nInvalid choice. Please try again.")
 
-def attraction_details(attraction, navigation):
+def attraction_details(attraction, navigation, trip):
     navigation.push("Attraction Details")
 
     print("\n" + "=" * 45)
     print("            ATTRACTION DETAILS")
     print("=" * 45)
 
-    print(f"\n{attraction.full_details()}")   
+    print(f"\n{attraction.full_details()}")
 
     print("\n1. Add to My Trip")
     print("2. Back")
@@ -161,7 +168,7 @@ def attraction_details(attraction, navigation):
     elif choice == "2":
         navigation.back()
 
-def search_attraction():
+def search_attraction(trip):
     print("\n" + "=" * 45)
     print("              SEARCH ATTRACTION")
     print("=" * 45)
@@ -169,114 +176,247 @@ def search_attraction():
     name = input("\nEnter attraction name: ").strip()
     attractions = Maneger.load_attractions()
 
-    result = binary_search(attractions, name)
+    if not attractions:
+        print("\nNo attractions available.")
+        input("Press Enter to continue...")
+        return
 
-    if result:
-        print(f"\nFound: {result}")
-        print(result.full_details())
+    found = binary_search(attractions, name)
+
+    if found:
+        print("\nAttraction found!")
+        print("-" * 45)
+        print(found.full_details())
+
+        print("\n1. Add to My Trip")
+        print("2. Back")
+
+        choice = input("\nEnter your choice: ").strip()
+
+        if choice == "1":
+            if trip.add_attraction(found):
+                print(f"\n'{found.name}' added to My Trip!")
+            else:
+                print(f"\n'{found.name}' is already in your trip.")
+
+            input("Press Enter to continue...")
+
     else:
-        print(f"\nNo attraction found with the name '{name}'.")
+        print(f"\nAttraction '{name}' not found.")
+        input("Press Enter to continue...")
 
-    input("\nPress Enter to continue...")
-
-def search_category(category):
+def search_category(category, trip):
     print("\n" + "=" * 45)
-    print(f"         SEARCH IN {category.upper()}")
+    print(f"          SEARCH IN {category.upper()}")
     print("=" * 45)
 
     name = input("\nEnter attraction name: ").strip()
     attractions = Maneger.load_attractions()
-    filtered = [a for a in attractions if a.category == category]
 
-    result = binary_search(filtered, name)
+    category_attractions = [
+        a for a in attractions
+        if a.category.lower() == category.lower()
+    ]
 
-    if result:
-        print(f"\nFound: {result}")
-        print(result.full_details())
-    else:
-        print(f"\nNo attraction found with the name '{name}' in {category}.")
-
-    input("\nPress Enter to continue...")
-
-def sort_category(category):
-    print("\n" + "=" * 45)
-    print("              SORT ATTRACTIONS")
-    print("=" * 45)
-    print("1. Ticket Price - Ascending")
-    print("2. Ticket Price - Descending")
-    print("3. Back")
-
-    choice = input("\nEnter your choice: ").strip()
-
-    attractions = Maneger.load_attractions()
-    filtered = [a for a in attractions if a.category == category]
-
-    if choice == "1":
-        sorted_attractions = merge_sort_by_price(filtered, ascending=True)
-    elif choice == "2":
-        sorted_attractions = merge_sort_by_price(filtered, ascending=False)
-    elif choice == "3":
-        return
-    else:
-        print("\nInvalid choice.")
+    if not category_attractions:
+        print("\nNo attractions in this category.")
+        input("Press Enter to continue...")
         return
 
-    print(f"\n=== {category.upper()} (sorted by price) ===")
-    for i, a in enumerate(sorted_attractions, start=1):
-        print(f"{i}. {a}")
+    found = binary_search(category_attractions, name)
 
-    input("\nPress Enter to continue...")
+    if found:
+        print("\nAttraction found!")
+        print("-" * 45)
+        print(found.full_details())
 
-def search_category_by_governorate(category):
+        print("\n1. Add to My Trip")
+        print("2. Back")
+
+        choice = input("\nEnter your choice: ").strip()
+
+        if choice == "1":
+            if trip.add_attraction(found):
+                print(f"\n'{found.name}' added to My Trip!")
+            else:
+                print(f"\n'{found.name}' is already in your trip.")
+
+            input("Press Enter to continue...")
+
+    else:
+        print(f"\nAttraction '{name}' not found in {category}.")
+        input("Press Enter to continue...")
+
+
+# Search by Governorate and by Minimum Rating.
+def search_category_by_governorate(category, trip):
     print("\n" + "=" * 45)
-    print("           SEARCH BY GOVERNORATE")
+    print(f"   SEARCH BY GOVERNORATE IN {category.upper()}")
     print("=" * 45)
 
     governorate = input("\nEnter governorate: ").strip()
-    attractions = Maneger.load_attractions()
-    filtered = [a for a in attractions if a.category == category]
 
-    results = search_by_governorate(filtered, governorate)
+    if not governorate:
+        print("\nGovernorate cannot be empty.")
+        input("Press Enter to continue...")
+        return
+
+    attractions = Maneger.load_attractions()
+    category_attractions = [
+        a for a in attractions
+        if a.category.lower() == category.lower()
+    ]
+
+    if not category_attractions:
+        print("\nNo attractions in this category.")
+        input("Press Enter to continue...")
+        return
+
+    results = search_by_governorate(category_attractions, governorate)
 
     if not results:
-        print(f"\nNo attractions found in '{governorate}' within {category}.")
-    else:
-        print(f"\n=== Attractions in {governorate} ({category}) ===")
-        for i, a in enumerate(results, start=1):
-            print(f"{i}. {a}")
+        print(f"\nNo attractions found in governorate '{governorate}'.")
+        input("Press Enter to continue...")
+        return
 
-    input("\nPress Enter to continue...")
+    print(f"\nFound {len(results)} attraction(s) in '{governorate}':")
+    print("-" * 45)
+    for i, a in enumerate(results, start=1):
+        print(f"{i}. {a}")
 
+    print("\nEnter a number to add it to My Trip, or 0 to go back")
+    choice = input("Enter your choice: ").strip()
 
-def search_category_by_rating(category):
+    if choice.isdigit() and 1 <= int(choice) <= len(results):
+        selected = results[int(choice) - 1]
+        if trip.add_attraction(selected):
+            print(f"\n'{selected.name}' added to My Trip!")
+        else:
+            print(f"\n'{selected.name}' is already in your trip.")
+        input("Press Enter to continue...")
+
+def search_category_by_rating(category, trip):
     print("\n" + "=" * 45)
-    print("          SEARCH BY MINIMUM RATING")
+    print(f"  SEARCH BY MINIMUM RATING IN {category.upper()}")
     print("=" * 45)
 
-    is_valid, min_rating = validate_number(
-        input("\nEnter minimum rating (0 to 5): ").strip(), min_value=0, max_value=5
-    )
-    while not is_valid:
-        print("Invalid rating. Must be a number between 0 and 5.")
-        is_valid, min_rating = validate_number(
-            input("Enter minimum rating (0 to 5): ").strip(), min_value=0, max_value=5
-        )
+    rating_input = input("\nEnter minimum rating (0-5): ").strip()
+
+    try:
+        min_rating = float(rating_input)
+    except ValueError:
+        print("\nRating must be a valid number.")
+        input("Press Enter to continue...")
+        return
+
+    if not (0 <= min_rating <= 5):
+        print("\nRating must be between 0 and 5.")
+        input("Press Enter to continue...")
+        return
 
     attractions = Maneger.load_attractions()
-    filtered = [a for a in attractions if a.category == category]
+    category_attractions = [
+        a for a in attractions
+        if a.category.lower() == category.lower()
+    ]
 
-    results = search_by_min_rating(filtered, min_rating)
+    if not category_attractions:
+        print("\nNo attractions in this category.")
+        input("Press Enter to continue...")
+        return
+
+    results = search_by_min_rating(category_attractions, min_rating)
 
     if not results:
-        print(f"\nNo attractions in {category} with rating >= {min_rating}.")
-    else:
-        print(f"\n=== {category} with rating >= {min_rating} ===")
-        for i, a in enumerate(reversed(results), start=1):
-            print(f"{i}. {a}")
+        print(f"\nNo attractions with rating >= {min_rating}.")
+        input("Press Enter to continue...")
+        return
+
+    # show highest rated first
+    results = list(reversed(results))
+
+    print(f"\nFound {len(results)} attraction(s) with rating >= {min_rating}:")
+    print("-" * 45)
+    for i, a in enumerate(results, start=1):
+        print(f"{i}. {a}")
+
+    print("\nEnter a number to add it to My Trip, or 0 to go back")
+    choice = input("Enter your choice: ").strip()
+
+    if choice.isdigit() and 1 <= int(choice) <= len(results):
+        selected = results[int(choice) - 1]
+        if trip.add_attraction(selected):
+            print(f"\n'{selected.name}' added to My Trip!")
+        else:
+            print(f"\n'{selected.name}' is already in your trip.")
+        input("Press Enter to continue...")
+
+def sort_category(category):
+    print("\n" + "=" * 45)
+    print(f"          SORT {category.upper()}")
+    print("=" * 45)
+
+    print("1. Ticket Price")
+    print("2. Rating (Bonus)")
+    print("3. Governorate (Bonus)")
+    print("4. Back")
+
+    attr_choice = input("\nSort by: ").strip()
+
+    if attr_choice == "4":
+        return
+
+    sort_options = {
+        "1": ("Ticket Price", lambda a: a.ticket_price),
+        "2": ("Rating", lambda a: a.rating),
+        "3": ("Governorate", lambda a: a.governorate.lower()),
+    }
+
+    if attr_choice not in sort_options:
+        print("\nInvalid choice.")
+        return
+
+    label, key_func = sort_options[attr_choice]
+
+    print("\n1. Ascending")
+    print("2. Descending")
+    print("3. Back")
+
+    direction = input("\nEnter your choice: ").strip()
+
+    if direction == "3":
+        return
+
+    if direction not in ["1", "2"]:
+        print("\nInvalid choice.")
+        return
+
+    attractions = Maneger.load_attractions()
+
+    category_attractions = [
+        a for a in attractions
+        if a.category.lower() == category.lower()
+    ]
+
+    if not category_attractions:
+        print("\nNo attractions in this category.")
+        input("Press Enter to continue...")
+        return
+
+    ascending = direction == "1"
+    sorted_attractions = merge_sort(category_attractions, key=key_func, reverse=not ascending)
+
+    print("\n" + "=" * 45)
+    print(f"    SORTED BY {label.upper()} - {'ASCENDING' if ascending else 'DESCENDING'}")
+    print("=" * 45)
+
+    for i, attraction in enumerate(sorted_attractions, start=1):
+        print(f"{i}. {attraction.name} - {attraction.governorate} - "
+              f"{attraction.ticket_price} EGP - Rating: {attraction.rating}")
 
     input("\nPress Enter to continue...")
 
-def my_trip(navigation):
+def my_trip(navigation, trip):
     navigation.push("My Trip")
 
     while True:
@@ -311,7 +451,8 @@ def my_trip(navigation):
             return
         else:
             print("\nInvalid choice. Please try again.")
-def trip_summary(navigation):
+
+def trip_summary(navigation, trip):
     navigation.push("Trip Summary")
 
     print("\n" + "=" * 45)

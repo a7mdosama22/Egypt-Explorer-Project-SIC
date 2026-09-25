@@ -21,6 +21,9 @@ def validate_age(age):
     except ValueError:
         return False
 
+def validate_national_id(national_id):
+    return national_id.isdigit() and len(national_id) == 14
+
 def validate_number(value, min_value=0, max_value=None, allow_decimal=True):
     try:
         number = float(value) if allow_decimal else int(value)

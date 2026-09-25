@@ -7,6 +7,7 @@
     "governorate": "Cairo",
     "password": "admin123",
     "age": 30,
+    "national_id": "00000000000000",
     "type": "admin"
   },
   {
@@ -17,6 +18,7 @@
     "governorate": "Cairo",
     "password": "pass123",
     "age": 22,
+    "national_id": "29801011234567",
     "type": "normal"
   },
   {
@@ -27,6 +29,7 @@
     "governorate": "Alexandria",
     "password": "sara2024",
     "age": 25,
+    "national_id": "29501022345678",
     "type": "normal"
   },
   {
@@ -37,6 +40,7 @@
     "governorate": "Giza",
     "password": "yalla123",
     "age": 28,
+    "national_id": "29201033456789",
     "type": "normal"
   },
   {
@@ -47,6 +51,18 @@
     "governorate": "cairo",
     "password": "123456",
     "age": 21,
+    "national_id": "30301044567890",
+    "type": "normal"
+  },
+  {
+    "name": "simon",
+    "phone": "01240613230",
+    "email": "simon@gmail.com",
+    "gender": "female",
+    "governorate": "cairo",
+    "password": "1234567",
+    "age": 21,
+    "national_id": "30506201403486",
     "type": "normal"
   }
 ]

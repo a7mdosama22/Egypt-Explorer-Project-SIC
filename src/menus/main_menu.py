@@ -4,7 +4,8 @@ from ..utils.Validators import (
     validate_email,
     validate_password,
     validate_phone,
-    validate_age
+    validate_age,
+    validate_national_id
 )
 
 from .user_menu import user_menu
@@ -93,10 +94,18 @@ def register_menu():
         print("Invalid age. Must be a number ")
         age = input("Age  ").strip()
 
+    national_id = input("National ID (14 digits): ").strip()
+    while not validate_national_id(national_id):
+        print("Invalid National ID. Must be exactly 14 digits.")
+        national_id = input("National ID (14 digits): ").strip()
+
     users = Maneger.load_users()
     for user in users:
         if user.email == email:
             print("\nThis email is already registered.")
+            return
+        if user.national_id == national_id:
+            print("\nThis National ID is already registered.")
             return
 
     new_user = NormalUser(
@@ -106,7 +115,8 @@ def register_menu():
         gender,
         governorate,
         password,
-        int(age)
+        int(age),
+        national_id
     )
 
     users.append(new_user)
@@ -114,4 +124,3 @@ def register_menu():
 
     print("\nAccount created successfully!")
     input("Press Enter to continue...")
-
