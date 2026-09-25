@@ -1,6 +1,8 @@
 from .navigation import NavigationStack
 from ..models import Maneger
 from ..models.trip import Trip
+from ..algorithms.search import binary_search, search_by_governorate, search_by_min_rating
+from ..algorithms.sort import merge_sort_by_price
 
 CATEGORIES = [
     "Museums",
@@ -163,15 +165,36 @@ def search_attraction():
     print("=" * 45)
 
     name = input("\nEnter attraction name: ").strip()
+    attractions = Maneger.load_attractions()
 
-    print(f"\nSearching for: {name}")
-    print("Binary Search will be connected here.")
+    result = binary_search(attractions, name)
+
+    if result:
+        print(f"\nFound: {result}")
+        print(result.full_details())
+    else:
+        print(f"\nNo attraction found with the name '{name}'.")
+
+    input("\nPress Enter to continue...")
 
 def search_category(category):
-    name = input("\nEnter attraction name: ").strip()
+    print("\n" + "=" * 45)
+    print(f"         SEARCH IN {category.upper()}")
+    print("=" * 45)
 
-    print(f"\nSearching in {category}: {name}")
-    print("Binary Search will be connected here.")
+    name = input("\nEnter attraction name: ").strip()
+    attractions = Maneger.load_attractions()
+    filtered = [a for a in attractions if a.category == category]
+
+    result = binary_search(filtered, name)
+
+    if result:
+        print(f"\nFound: {result}")
+        print(result.full_details())
+    else:
+        print(f"\nNo attraction found with the name '{name}' in {category}.")
+
+    input("\nPress Enter to continue...")
 
 def sort_category(category):
     print("\n" + "=" * 45)
@@ -183,13 +206,25 @@ def sort_category(category):
 
     choice = input("\nEnter your choice: ").strip()
 
-    if choice == "1":
-        print("\nSorting by ticket price ascending...")
-    elif choice == "2":
-        print("\nSorting by ticket price descending...")
-    elif choice != "3":
-        print("\nInvalid choice.")
+    attractions = Maneger.load_attractions()
+    filtered = [a for a in attractions if a.category == category]
 
+    if choice == "1":
+        sorted_attractions = merge_sort_by_price(filtered, ascending=True)
+    elif choice == "2":
+        sorted_attractions = merge_sort_by_price(filtered, ascending=False)
+    elif choice == "3":
+        return
+    else:
+        print("\nInvalid choice.")
+        return
+
+    print(f"\n=== {category.upper()} (sorted by price) ===")
+    for i, a in enumerate(sorted_attractions, start=1):
+        print(f"{i}. {a}")
+
+    input("\nPress Enter to continue...")
+    
 def my_trip(navigation):
     navigation.push("My Trip")
 
