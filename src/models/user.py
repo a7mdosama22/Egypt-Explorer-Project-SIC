@@ -1,16 +1,5 @@
 class User:
-    def __init__(
-        self,
-        name,
-        phone,
-        email,
-        gender,
-        governorate,
-        password,
-        age,
-        national_id,
-        user_type="normal"
-    ):
+    def __init__(self,name,phone,email,gender,governorate,password,age,national_id,user_type="normal"):
         self.name = name
         self.phone = phone
         self.email = email
@@ -63,50 +52,10 @@ class User:
 
 
 class NormalUser(User):
-    def __init__(
-        self,
-        name,
-        phone,
-        email,
-        gender,
-        governorate,
-        password,
-        age,
-        national_id
-    ):
-        super().__init__(
-            name,
-            phone,
-            email,
-            gender,
-            governorate,
-            password,
-            age,
-            national_id,
-            "normal"
-        )
+    def __init__(self,name,phone,email,gender,governorate,password,age,national_id):
+        super().__init__(name,phone,email,gender,governorate,password,age,national_id,"normal")
 
 
 class Admin(User):
-    def __init__(
-        self,
-        name,
-        phone,
-        email,
-        gender,
-        governorate,
-        password,
-        age,
-        national_id
-    ):
-        super().__init__(
-            name,
-            phone,
-            email,
-            gender,
-            governorate,
-            password,
-            age,
-            national_id,
-            "admin"
-        )
+    def __init__(self,name,phone,email,gender,governorate,password,age,national_id):
+        super().__init__(name,phone,email,gender,governorate,password,age,national_id,"admin")

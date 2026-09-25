@@ -64,7 +64,7 @@ def add_attraction():
     ticket_price = float(input("Ticket Price: ").strip())
     rating = float(input("Rating: ").strip())
 
-# need validation
+
     attractions = Maneger.load_attractions()
     new_id = max((a.id for a in attractions), default=0) + 1
 
