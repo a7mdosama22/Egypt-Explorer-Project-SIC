@@ -1,5 +1,5 @@
 from ..models import Maneger
-from ..models.user import NormalUser, Admin
+from ..models.user import NormalUser
 from ..utils.validators import (
     validate_email,
     validate_password,
@@ -29,14 +29,11 @@ def main_menu():
 
         if choice == "1":
             login_menu()
-
         elif choice == "2":
             register_menu()
-
         elif choice == "3":
             print("\nThank you for using Smart Tourism System!")
             break
-
         else:
             print("\nInvalid choice. Please try again.")
 
@@ -49,7 +46,6 @@ def login_menu():
     email = input("Email: ").strip()
     password = input("Password: ").strip()
 
-    # Admin login
     if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
         print("\nLogin successful.")
         print("Welcome Admin!")
@@ -65,9 +61,9 @@ def login_menu():
                 print(f"Welcome, {user.name}!")
                 user_menu()
                 return
-            else:
-                print("\nIncorrect password.")
-                return
+
+            print("\nIncorrect password.")
+            return
 
     print("\nThis email is not registered.")
 
@@ -86,14 +82,12 @@ def register_menu():
     age = input("Age: ").strip()
     national_id = input("National ID: ").strip()
 
-    # Validation
     if not name:
         print("\nName cannot be empty.")
         return
 
     if not validate_phone(phone):
         print("\nInvalid phone number.")
-        print("Phone must contain 8 to 15 digits.")
         return
 
     if not validate_email(email):
@@ -114,26 +108,23 @@ def register_menu():
 
     users = Maneger.load_users()
 
-    # Check if email already exists
     for user in users:
         if user.email == email:
-            print("\nAn account with this email already exists.")
+            print("\nThis email is already registered.")
             return
 
-    # Create new normal user
     new_user = NormalUser(
-        name=name,
-        phone=phone,
-        email=email,
-        gender=gender,
-        governorate=governorate,
-        password=password,
-        age=int(age),
-        national_id=national_id
+        name,
+        phone,
+        email,
+        gender,
+        governorate,
+        password,
+        int(age),
+        national_id
     )
 
     users.append(new_user)
-
     Maneger.save_users(users)
 
     print("\nAccount created successfully!")
