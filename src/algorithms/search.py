@@ -68,13 +68,13 @@ def _binary_search_lower_bound(sorted_items, min_value, key):
 
     return sorted_items[left:]
 
-# Return every attraction located in the given governorate
+
 def search_by_governorate(attractions, governorate):
     sorted_attractions = merge_sort(attractions, key=lambda a: a.governorate.lower())
     target = governorate.strip().lower()
     return _binary_search_range(sorted_attractions, target, key=lambda a: a.governorate.lower())
 
-# Return every attraction with rating >= min_rating
+
 def search_by_min_rating(attractions, min_rating):
     sorted_attractions = merge_sort(attractions, key=lambda a: a.rating)
     return _binary_search_lower_bound(sorted_attractions, min_rating, key=lambda a: a.rating)

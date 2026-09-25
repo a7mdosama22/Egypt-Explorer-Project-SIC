@@ -3,6 +3,7 @@ from ..models import Maneger
 from ..models.trip import Trip
 from ..algorithms.search import binary_search, search_by_governorate, search_by_min_rating
 from ..algorithms.sort import merge_sort_by_price
+from ..utils.Validators import validate_number
 
 CATEGORIES = [
     "Museums",
@@ -80,27 +81,28 @@ def category_page(category, navigation):
         print(f"              {category.upper()}")
         print("=" * 45)
 
-        
         print("\n1. View Attractions")
         print("2. Search by Name")
         print("3. Sort by Ticket Price")
-        print("4. Back")
+        print("4. Search by Governorate")
+        print("5. Search by Minimum Rating")
+        print("6. Back")
 
         choice = input("\nEnter your choice: ").strip()
 
         if choice == "1":
             show_attractions(category, navigation)
-
         elif choice == "2":
             search_category(category)
-
         elif choice == "3":
             sort_category(category)
-
         elif choice == "4":
+            search_category_by_governorate(category)
+        elif choice == "5":
+            search_category_by_rating(category)
+        elif choice == "6":
             navigation.back()
             return
-
         else:
             print("\nInvalid choice. Please try again.")
 
@@ -224,7 +226,56 @@ def sort_category(category):
         print(f"{i}. {a}")
 
     input("\nPress Enter to continue...")
-    
+
+def search_category_by_governorate(category):
+    print("\n" + "=" * 45)
+    print("           SEARCH BY GOVERNORATE")
+    print("=" * 45)
+
+    governorate = input("\nEnter governorate: ").strip()
+    attractions = Maneger.load_attractions()
+    filtered = [a for a in attractions if a.category == category]
+
+    results = search_by_governorate(filtered, governorate)
+
+    if not results:
+        print(f"\nNo attractions found in '{governorate}' within {category}.")
+    else:
+        print(f"\n=== Attractions in {governorate} ({category}) ===")
+        for i, a in enumerate(results, start=1):
+            print(f"{i}. {a}")
+
+    input("\nPress Enter to continue...")
+
+
+def search_category_by_rating(category):
+    print("\n" + "=" * 45)
+    print("          SEARCH BY MINIMUM RATING")
+    print("=" * 45)
+
+    is_valid, min_rating = validate_number(
+        input("\nEnter minimum rating (0 to 5): ").strip(), min_value=0, max_value=5
+    )
+    while not is_valid:
+        print("Invalid rating. Must be a number between 0 and 5.")
+        is_valid, min_rating = validate_number(
+            input("Enter minimum rating (0 to 5): ").strip(), min_value=0, max_value=5
+        )
+
+    attractions = Maneger.load_attractions()
+    filtered = [a for a in attractions if a.category == category]
+
+    results = search_by_min_rating(filtered, min_rating)
+
+    if not results:
+        print(f"\nNo attractions in {category} with rating >= {min_rating}.")
+    else:
+        print(f"\n=== {category} with rating >= {min_rating} ===")
+        for i, a in enumerate(reversed(results), start=1):
+            print(f"{i}. {a}")
+
+    input("\nPress Enter to continue...")
+
 def my_trip(navigation):
     navigation.push("My Trip")
 
