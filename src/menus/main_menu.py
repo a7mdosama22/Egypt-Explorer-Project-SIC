@@ -1,5 +1,8 @@
 from menus.user_menu import user_menu
 from menus.admin_menu import admin_menu
+from auth import UserManager
+
+manager = UserManager()
 
 def main_menu():
     while True:
@@ -30,21 +33,23 @@ def login_menu():
     email = input("Email: ").strip()
     password = input("Password: ").strip()
 
-    # Temporary admin login
-    if email == "admin@gmail.com" and password == "admin123":
-        print("\nLogin successful. Welcome Admin!")
+    user, message = manager.login(email, password)
+    print(f"\n{message}")
+
+    if user is None:
+        return
+
+    if user.is_admin:
+        print(f"Welcome Admin, {user.name}!")
         admin_menu()
     else:
-        # Temporary normal user flow
-        print("\nLogin successful. Welcome User!")
+        print(f"Welcome, {user.name}!")
         user_menu()
 
 def register_menu():
     print("\n" + "=" * 45)
     print("                  REGISTER")
     print("=" * 45)
-
-    print("\nRegistration form:")
 
     name = input("Name: ").strip()
     phone = input("Phone: ").strip()
@@ -55,9 +60,12 @@ def register_menu():
     age = input("Age: ").strip()
     national_id = input("National ID: ").strip()
 
-    print("\nRegistration completed successfully!")
-    print(f"Welcome, {name}!")
-    input("\nPress Enter to continue...")
+    success, message = manager.register(
+        name, phone, email, gender, governorate, password, age, national_id
+    )
+    print(f"\n{message}")
+    if success:
+        input("Press Enter to continue...")
 
 if __name__ == "__main__":
     main_menu()
