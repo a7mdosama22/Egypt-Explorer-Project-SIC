@@ -1,5 +1,14 @@
 from ..models.attraction import Attraction
 from ..models import Maneger
+from ..utils.Validators import validate_number
+
+CATEGORIES = [
+    "Museums",
+    "Historical Sites",
+    "Nature",
+    "Adventure",
+    "Cultural Attractions"
+]
 
 def admin_menu():
     while True:
@@ -57,13 +66,43 @@ def add_attraction():
     print("=" * 45)
 
     name = input("Name: ").strip()
+    while not name:
+        print("Name cannot be empty.")
+        name = input("Name: ").strip()
+
     governorate = input("Governorate: ").strip()
+    while not governorate:
+        print("Governorate cannot be empty.")
+        governorate = input("Governorate: ").strip()
+
+    print(f"Category options: {', '.join(CATEGORIES)}")
     category = input("Category: ").strip()
-    visit_time = input("Estimated Visit Time: ").strip()
+    while category not in CATEGORIES:
+        print(f"Invalid category. Must be one of: {', '.join(CATEGORIES)}")
+        category = input("Category: ").strip()
 
-    ticket_price = float(input("Ticket Price: ").strip())
-    rating = float(input("Rating: ").strip())
+    visit_time = input("Estimated Visit Time (e.g. 3 hours): ").strip()
+    while not visit_time:
+        print("Estimated Visit Time cannot be empty.")
+        visit_time = input("Estimated Visit Time (e.g. 3 hours): ").strip()
 
+    is_valid_price, ticket_price = validate_number(
+        input("Ticket Price (number, 0 or more): ").strip(), min_value=0
+    )
+    while not is_valid_price:
+        print("Invalid ticket price. Must be a number, 0 or more.")
+        is_valid_price, ticket_price = validate_number(
+            input("Ticket Price (number, 0 or more): ").strip(), min_value=0
+        )
+
+    is_valid_rating, rating = validate_number(
+        input("Rating (0 to 5): ").strip(), min_value=0, max_value=5
+    )
+    while not is_valid_rating:
+        print("Invalid rating. Must be a number between 0 and 5.")
+        is_valid_rating, rating = validate_number(
+            input("Rating (0 to 5): ").strip(), min_value=0, max_value=5
+        )
 
     attractions = Maneger.load_attractions()
     new_id = max((a.id for a in attractions), default=0) + 1
@@ -154,8 +193,11 @@ def update_ticket_price():
         return
 
     
-    new_price = float(input("Enter new ticket price: ").strip())
-    
+    is_valid, new_price = validate_number(input("Enter new ticket price: ").strip(), min_value=0)
+    if not is_valid:
+        print("\nInvalid price. No changes made.")
+        input("Press Enter to continue")
+        return
 
     found.ticket_price = new_price
     Maneger.save_attractions(attractions)

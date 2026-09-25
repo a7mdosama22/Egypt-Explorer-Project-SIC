@@ -1,0 +1,146 @@
+[
+  {
+    "id": 1,
+    "name": "Egyptian Museum",
+    "governorate": "Cairo",
+    "ticket_price": 200,
+    "rating": 4.8,
+    "estimated_visit_time": "3 hours",
+    "category": "Museums"
+  },
+  {
+    "id": 2,
+    "name": "Nubian Museum",
+    "governorate": "Aswan",
+    "ticket_price": 150,
+    "rating": 4.5,
+    "estimated_visit_time": "2 hours",
+    "category": "Museums"
+  },
+  {
+    "id": 3,
+    "name": "Coptic Museum",
+    "governorate": "Cairo",
+    "ticket_price": 100,
+    "rating": 4.2,
+    "estimated_visit_time": "1.5 hours",
+    "category": "Museums"
+  },
+  {
+    "id": 4,
+    "name": "Karnak Temple",
+    "governorate": "Luxor",
+    "ticket_price": 300,
+    "rating": 4.9,
+    "estimated_visit_time": "4 hours",
+    "category": "Historical Sites"
+  },
+  {
+    "id": 5,
+    "name": "Valley of the Kings",
+    "governorate": "Luxor",
+    "ticket_price": 260,
+    "rating": 4.8,
+    "estimated_visit_time": "3 hours",
+    "category": "Historical Sites"
+  },
+  {
+    "id": 6,
+    "name": "Giza Pyramids",
+    "governorate": "Giza",
+    "ticket_price": 400,
+    "rating": 5.0,
+    "estimated_visit_time": "3 hours",
+    "category": "Historical Sites"
+  },
+  {
+    "id": 7,
+    "name": "Ras Mohammed National Park",
+    "governorate": "South Sinai",
+    "ticket_price": 120,
+    "rating": 4.6,
+    "estimated_visit_time": "5 hours",
+    "category": "Nature"
+  },
+  {
+    "id": 8,
+    "name": "White Desert",
+    "governorate": "New Valley",
+    "ticket_price": 180,
+    "rating": 4.7,
+    "estimated_visit_time": "6 hours",
+    "category": "Nature"
+  },
+  {
+    "id": 9,
+    "name": "Siwa Oasis",
+    "governorate": "Matrouh",
+    "ticket_price": 150,
+    "rating": 4.6,
+    "estimated_visit_time": "1 day",
+    "category": "Nature"
+  },
+  {
+    "id": 10,
+    "name": "Dahab Diving Trip",
+    "governorate": "South Sinai",
+    "ticket_price": 350,
+    "rating": 4.7,
+    "estimated_visit_time": "4 hours",
+    "category": "Adventure"
+  },
+  {
+    "id": 11,
+    "name": "Sandboarding in Fayoum",
+    "governorate": "Fayoum",
+    "ticket_price": 220,
+    "rating": 4.4,
+    "estimated_visit_time": "3 hours",
+    "category": "Adventure"
+  },
+  {
+    "id": 12,
+    "name": "Hot Air Balloon Luxor",
+    "governorate": "Luxor",
+    "ticket_price": 600.0,
+    "rating": 4.9,
+    "estimated_visit_time": "2 hours",
+    "category": "Adventure"
+  },
+  {
+    "id": 13,
+    "name": "Khan El Khalili Bazaar",
+    "governorate": "Cairo",
+    "ticket_price": 0,
+    "rating": 4.5,
+    "estimated_visit_time": "2 hours",
+    "category": "Cultural Attractions"
+  },
+  {
+    "id": 14,
+    "name": "Al-Azhar Mosque",
+    "governorate": "Cairo",
+    "ticket_price": 0,
+    "rating": 4.6,
+    "estimated_visit_time": "1 hour",
+    "category": "Cultural Attractions"
+  },
+  {
+    "id": 15,
+    "name": "Alexandria Library",
+    "governorate": "Alexandria",
+    "ticket_price": 70,
+    "rating": 4.7,
+    "estimated_visit_time": "2 hours",
+    "category": "Cultural Attractions"
+  },
+  {
+    "id": 16,
+    "name": "dream park",
+    "governorate": "giza",
+    "ticket_price": 300.0,
+    "rating": 4.0,
+    "estimated_visit_time": "3",
+    "category": "Adventure"
+  }
+]

@@ -1,5 +1,5 @@
 class User:
-    def __init__(self,name,phone,email,gender,governorate,password,age,national_id,user_type="normal"):
+    def __init__(self, name, phone, email, gender, governorate, password, age, user_type="normal"):
         self.name = name
         self.phone = phone
         self.email = email
@@ -7,8 +7,10 @@ class User:
         self.governorate = governorate
         self.password = password
         self.age = age
-        self.national_id = national_id
         self.user_type = user_type
+
+    def is_admin(self):
+        return self.user_type == "admin"
 
     def to_dict(self):
         return {
@@ -19,7 +21,6 @@ class User:
             "governorate": self.governorate,
             "password": self.password,
             "age": self.age,
-            "national_id": self.national_id,
             "type": self.user_type
         }
 
@@ -36,7 +37,6 @@ class User:
                 governorate=data.get("governorate", ""),
                 password=data.get("password", ""),
                 age=data.get("age", 0),
-                national_id=data.get("national_id", "")
             )
 
         return NormalUser(
@@ -47,15 +47,14 @@ class User:
             governorate=data.get("governorate", ""),
             password=data.get("password", ""),
             age=data.get("age", 0),
-            national_id=data.get("national_id", "")
         )
 
 
 class NormalUser(User):
-    def __init__(self,name,phone,email,gender,governorate,password,age,national_id):
-        super().__init__(name,phone,email,gender,governorate,password,age,national_id,"normal")
+    def __init__(self, name, phone, email, gender, governorate, password, age):
+        super().__init__(name, phone, email, gender, governorate, password, age, "normal")
 
 
 class Admin(User):
-    def __init__(self,name,phone,email,gender,governorate,password,age,national_id):
-        super().__init__(name,phone,email,gender,governorate,password,age,national_id,"admin")
+    def __init__(self, name, phone, email, gender, governorate, password, age):
+        super().__init__(name, phone, email, gender, governorate, password, age, "admin")

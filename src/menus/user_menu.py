@@ -1,4 +1,4 @@
-from menus.navigation import NavigationStack
+from .navigation import NavigationStack
 from ..models import Maneger
 from ..models.trip import Trip
 
@@ -12,6 +12,7 @@ CATEGORIES = [
 trip = Trip()
 def user_menu():
     navigation = NavigationStack()
+    navigation.push("Home")
 
     while True:
         print("\n" + "=" * 45)

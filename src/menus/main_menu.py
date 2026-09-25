@@ -1,20 +1,14 @@
 from ..models import Maneger
 from ..models.user import NormalUser
-from ..utils.validators import (
+from ..utils.Validators import (
     validate_email,
     validate_password,
-    validate_national_id,
     validate_phone,
     validate_age
 )
 
-from menus.user_menu import user_menu
-from menus.admin_menu import admin_menu
-
-
-ADMIN_EMAIL = "admin@gmail.com"
-ADMIN_PASSWORD = "admin123"
-
+from .user_menu import user_menu
+from .admin_menu import admin_menu
 
 def main_menu():
     while True:
@@ -46,20 +40,18 @@ def login_menu():
     email = input("Email: ").strip()
     password = input("Password: ").strip()
 
-    if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
-        print("\nLogin successful.")
-        print("Welcome Admin!")
-        admin_menu()
-        return
-
     users = Maneger.load_users()
 
     for user in users:
         if user.email == email:
             if user.password == password:
                 print("\nLogin successful.")
-                print(f"Welcome, {user.name}!")
-                user_menu()
+                print(f"Welcome, {user.name}")
+
+                if user.user_type == "admin":
+                    admin_menu()
+                else:
+                    user_menu()
                 return
 
             print("\nIncorrect password.")
@@ -67,47 +59,41 @@ def login_menu():
 
     print("\nThis email is not registered.")
 
-
 def register_menu():
     print("\n" + "=" * 45)
     print("                  REGISTER")
     print("=" * 45)
 
     name = input("Name: ").strip()
-    phone = input("Phone: ").strip()
-    email = input("Email: ").strip()
-    gender = input("Gender: ").strip()
+    while not name:
+        print("Name cannot be empty.")
+        name = input("Name: ").strip()
+
+    phone = input("Phone (11 digits): ").strip()
+    while not validate_phone(phone):
+        print("Invalid phone number. Must be 11 digits, numbers only.")
+        phone = input("Phone (11 digits): ").strip()
+
+    email = input("Email (name@example.com): ").strip()
+    while not validate_email(email):
+        print("Invalid email format.")
+        email = input("Email (name@example.com): ").strip()
+
+    gender = input("Gender (Male/Female): ").strip()
+
     governorate = input("Governorate: ").strip()
-    password = input("Password: ").strip()
-    age = input("Age: ").strip()
-    national_id = input("National ID: ").strip()
 
-    if not name:
-        print("\nName cannot be empty.")
-        return
+    password = input("Password (min 6 characters): ").strip()
+    while not validate_password(password):
+        print("Password must be at least 6 characters.")
+        password = input("Password (min 6 characters): ").strip()
 
-    if not validate_phone(phone):
-        print("\nInvalid phone number.")
-        return
-
-    if not validate_email(email):
-        print("\nInvalid email format.")
-        return
-
-    if not validate_password(password):
-        print("\nPassword must be at least 6 characters.")
-        return
-
-    if not validate_national_id(national_id):
-        print("\nNational ID must be exactly 14 digits.")
-        return
-
-    if not validate_age(age):
-        print("\nInvalid age.")
-        return
+    age = input("Age : ").strip()
+    while not validate_age(age):
+        print("Invalid age. Must be a number ")
+        age = input("Age  ").strip()
 
     users = Maneger.load_users()
-
     for user in users:
         if user.email == email:
             print("\nThis email is already registered.")
@@ -120,8 +106,7 @@ def register_menu():
         gender,
         governorate,
         password,
-        int(age),
-        national_id
+        int(age)
     )
 
     users.append(new_user)
@@ -130,6 +115,3 @@ def register_menu():
     print("\nAccount created successfully!")
     input("Press Enter to continue...")
 
-
-if __name__ == "__main__":
-    main_menu()

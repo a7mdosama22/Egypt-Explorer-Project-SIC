@@ -1,1 +1,52 @@
-
+[
+  {
+    "name": "Admin",
+    "phone": "01000000000",
+    "email": "admin@gmail.com",
+    "gender": "N/A",
+    "governorate": "Cairo",
+    "password": "admin123",
+    "age": 30,
+    "type": "admin"
+  },
+  {
+    "name": "Ahmed Osama",
+    "phone": "01012345678",
+    "email": "ahmed@test.com",
+    "gender": "Male",
+    "governorate": "Cairo",
+    "password": "pass123",
+    "age": 22,
+    "type": "normal"
+  },
+  {
+    "name": "Sara Khaled",
+    "phone": "01123456789",
+    "email": "sara@test.com",
+    "gender": "Female",
+    "governorate": "Alexandria",
+    "password": "sara2024",
+    "age": 25,
+    "type": "normal"
+  },
+  {
+    "name": "Youssef Ali",
+    "phone": "01234567890",
+    "email": "youssef@test.com",
+    "gender": "Male",
+    "governorate": "Giza",
+    "password": "yalla123",
+    "age": 28,
+    "type": "normal"
+  },
+  {
+    "name": "Ahmed",
+    "phone": "01092974190",
+    "email": "a7md@gmail.com",
+    "gender": "male",
+    "governorate": "cairo",
+    "password": "123456",
+    "age": 21,
+    "type": "normal"
+  }
+]
