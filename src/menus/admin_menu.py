@@ -1,5 +1,5 @@
-from ..models.attraction import Attraction
-from ..models import Maneger
+from models.attraction import Attraction
+from models import Maneger
 
 def admin_menu():
     while True:

@@ -1,6 +1,6 @@
-from ..models import Maneger
-from ..models.user import NormalUser
-from ..utils.validators import (
+from models import Maneger
+from models.user import NormalUser
+from utils.Validators import (
     validate_email,
     validate_password,
     validate_national_id,
